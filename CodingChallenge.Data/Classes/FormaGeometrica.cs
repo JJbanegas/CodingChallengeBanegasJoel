@@ -8,6 +8,7 @@
  * */
 
 using CodingChallenge.Data.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -21,19 +22,30 @@ namespace CodingChallenge.Data.Classes
     {
         //declaro un objeto ResourceManager y le paso al constructor los archivos de recursos .resx y el ensamblado en tiempo de ejecucion
         static ResourceManager rm = new ResourceManager("CodingChallenge.Data.Res", Assembly.GetExecutingAssembly());
+        static CultureInfo traduccion = new CultureInfo("es-AR");
 
         public static string Imprimir(List<Forma> formas, string lenguaje = "es-AR")
         {
             var sb = new StringBuilder();
 
+            //verifico si el lunguaje enviado por parametro es un lenguaje valido, si no lo es asigna el lenguaje expañol por defecto
+            try
+            {
+                traduccion = new CultureInfo(lenguaje);
+            }
+            catch(Exception ex)
+            {
+                traduccion = new CultureInfo("es-AR");
+            }
+
             if (!formas.Any())
             {
                 //utilizo cultureInfo + el idioma en formato ISO 639-1 enviado por parametro en la variable lenguaje para traducir las palabras y frases
-                sb.Append($"<h1>{rm.GetString("Lista vacía de formas", new CultureInfo(lenguaje))}!</h1>");
+                sb.Append($"<h1>{rm.GetString("Lista vacía de formas", traduccion)}!</h1>");
             }
             else
             {
-                sb.Append($"<h1>{rm.GetString("Reporte de Formas", new CultureInfo(lenguaje))}</h1>");
+                sb.Append($"<h1>{rm.GetString("Reporte de Formas", traduccion)}</h1>");
                 var camposCalculados = ObtenerCamposCalculados(formas);
                 var listaAgrupada = ObtenerListaAgrupada(camposCalculados);
                 var lineas = ObtenerLineas(camposCalculados, listaAgrupada, lenguaje);
@@ -43,10 +55,10 @@ namespace CodingChallenge.Data.Classes
                 }
 
                 // FOOTER
-                sb.Append($"{rm.GetString("TOTAL", new CultureInfo(lenguaje))}:<br/>");
-                sb.Append(formas.Count + " " + $"{rm.GetString("formas", new CultureInfo(lenguaje))}" + " ");
-                sb.Append($"{rm.GetString("Perimetro", new CultureInfo(lenguaje))} " + (listaAgrupada.Select(x => x.Perimetro).Sum()).ToString("#.##") + " ");
-                sb.Append($"{rm.GetString("Area", new CultureInfo(lenguaje))} " + (listaAgrupada.Select(x => x.Area).Sum()).ToString("#.##"));
+                sb.Append($"{rm.GetString("TOTAL", traduccion)}:<br/>");
+                sb.Append(formas.Count + " " + $"{rm.GetString("formas", traduccion)}" + " ");
+                sb.Append($"{rm.GetString("Perimetro", traduccion)} " + (listaAgrupada.Select(x => x.Perimetro).Sum()).ToString("#.##") + " ");
+                sb.Append($"{rm.GetString("Area", traduccion)} " + (listaAgrupada.Select(x => x.Area).Sum()).ToString("#.##"));
             }
 
             return sb.ToString();
@@ -81,7 +93,7 @@ namespace CodingChallenge.Data.Classes
                     // verifico si la cantidad es mayopr a 1, en ese caso el nombre es plural
                     var nombre = cant > 1 ? item.Nombre + "s" : item.Nombre;
                     //realizo la concatenacion de los datos y lo agrego a la lista de rotorno
-                    var y = $"{cant} {rm.GetString(nombre, new CultureInfo(lenguaje))} | {rm.GetString("Area", new CultureInfo(lenguaje))} {item.Area:#.##} | {rm.GetString("Perimetro", new CultureInfo(lenguaje))} {item.Perimetro:#.##} <br/>";
+                    var y = $"{cant} {rm.GetString(nombre, traduccion)} | {rm.GetString("Area", traduccion)} {item.Area:#.##} | {rm.GetString("Perimetro", traduccion)} {item.Perimetro:#.##} <br/>";
                     lineasObtenidas.Add(y);
                 }
             }
