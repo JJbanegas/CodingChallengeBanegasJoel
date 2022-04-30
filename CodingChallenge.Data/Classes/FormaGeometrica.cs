@@ -19,8 +19,8 @@ namespace CodingChallenge.Data.Classes
 {
     public class FormaGeometrica
     {
-        static ResourceManager rm = new ResourceManager("CodingChallenge.Data.Res",
-        Assembly.GetExecutingAssembly());
+        //declaro un objeto ResourceManager y le paso al constructor los archivos de recursos .resx y el ensamblado en tiempo de ejecucion
+        static ResourceManager rm = new ResourceManager("CodingChallenge.Data.Res", Assembly.GetExecutingAssembly());
 
         public static string Imprimir(List<Forma> formas, string lenguaje = "es-AR")
         {
@@ -28,6 +28,7 @@ namespace CodingChallenge.Data.Classes
 
             if (!formas.Any())
             {
+                //utilizo cultureInfo + el idioma en formato ISO 639-1 enviado por parametro en la variable lenguaje para traducir las palabras y frases
                 sb.Append($"<h1>{rm.GetString("Lista vacía de formas", new CultureInfo(lenguaje))}!</h1>");
             }
             else
@@ -53,11 +54,13 @@ namespace CodingChallenge.Data.Classes
 
         public static List<Forma> ObtenerCamposCalculados(List<Forma> formas)
         {
+            //metodo que retorna una lista con la misma cantidad de elementos que el parametro pero con sus campos area y perimetros calculados
             List<Forma> valores = new List<Forma>();
             foreach (var item in formas)
             {
                 Forma l = new Forma();
                 l.Nombre = item.Nombre;
+                // al usar interfaz me aseguro que todas las formas tendran los metodos necesarios para calcular
                 l.Perimetro = (decimal)item.GetType().GetMethod("GetPerimetro").Invoke(item, null);
                 l.Area = (decimal)item.GetType().GetMethod("GetArea").Invoke(item, null);
                 valores.Add(l);
@@ -67,13 +70,17 @@ namespace CodingChallenge.Data.Classes
 
         public static List<string> ObtenerLineas(List<Forma> camposCalculados, List<Forma> listaAgrupada, string lenguaje)
         {
+            //metodo que retorna la linea con la cantidad, el area y el perimetro de cada figura en campos calculados y en lista agrupada
             List<string> lineasObtenidas = new List<string>();
             if (listaAgrupada.Count > 0)
             {
                 foreach (var item in listaAgrupada)
                 {
+                    //comparo la cantidad de elementos para un mismo nombre dentro de campos calculados
                     var cant = camposCalculados.Where(x => x.Nombre == item.Nombre).Count();
+                    // verifico si la cantidad es mayopr a 1, en ese caso el nombre es plural
                     var nombre = cant > 1 ? item.Nombre + "s" : item.Nombre;
+                    //realizo la concatenacion de los datos y lo agrego a la lista de rotorno
                     var y = $"{cant} {rm.GetString(nombre, new CultureInfo(lenguaje))} | {rm.GetString("Area", new CultureInfo(lenguaje))} {item.Area:#.##} | {rm.GetString("Perimetro", new CultureInfo(lenguaje))} {item.Perimetro:#.##} <br/>";
                     lineasObtenidas.Add(y);
                 }
@@ -84,6 +91,7 @@ namespace CodingChallenge.Data.Classes
 
         public static List<Forma> ObtenerListaAgrupada(List<Forma> camposCalculados)
         {
+            //utilizando linq puedo agrupar por nombre la lista de campos calculados, esto me permite realizar el sum del area y del perimetro y retornar la nueva lista
             var lFiltro = (from x in camposCalculados
                            group x by x.Nombre into g
                            select new Forma()
