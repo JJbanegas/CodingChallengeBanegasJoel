@@ -22,13 +22,14 @@ namespace CodingChallenge.Data.Classes
     {
         //declaro un objeto ResourceManager y le paso al constructor los archivos de recursos .resx y el ensamblado en tiempo de ejecucion
         static ResourceManager rm = new ResourceManager("CodingChallenge.Data.Res", Assembly.GetExecutingAssembly());
+        // declaro el objeto cultureInfo con un valor por defecto que se utilizará en los diferentes metodos de la pagina
         static CultureInfo traduccion = new CultureInfo("es-AR");
 
         public static string Imprimir(List<Forma> formas, string lenguaje = "es-AR")
         {
             var sb = new StringBuilder();
 
-            //verifico si el lunguaje enviado por parametro es un lenguaje valido, si no lo es asigna el lenguaje expañol por defecto
+            //verifico si el lenguaje enviado por parametro es un lenguaje valido, si no lo es asigna el lenguaje expañol por defecto
             try
             {
                 traduccion = new CultureInfo(lenguaje);
